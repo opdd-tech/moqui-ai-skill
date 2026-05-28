@@ -5,6 +5,8 @@ description: "Use this skill for ANY development task involving the Moqui Framew
 
 # Moqui Framework Development Skill
 
+> **Before writing code in the HSTO monorepo**, also read [`docs/ai/lessons.md`](../docs/ai/lessons.md) — cross-session lessons that supersede any guidance below where they conflict.
+
 ## Overview
 
 Moqui Framework is an all-in-one enterprise application framework based on Java and Groovy. It provides tools for databases, services, screens/forms, security, localization, caching, and integration. The ecosystem consists of:
