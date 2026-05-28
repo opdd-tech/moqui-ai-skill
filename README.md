@@ -58,7 +58,7 @@ cd moqui
 
 ```bash
 cd moqui/runtime/component
-git clone https://github.com/nirendra10695/moqui-ai-skill.git
+git clone git@github.com:opdd-tech/moqui-ai-skill.git
 ```
 
 ## How to use with any AI assistant
