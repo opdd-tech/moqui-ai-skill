@@ -1,0 +1,19 @@
+SKILL.md
+  s_25c8f9d2347400::t_e9751c3e7822e1 30-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6cba4b1e45c6fc6599da5db38b39b367ec44d034",
+  "prompts": {},
+  "sessions": {
+    "s_25c8f9d2347400": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4495943e-e9d4-434e-85be-c102d76c3cb8",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nirendra Singh Panwar <nirendra@noitechnologies.com>"
+    }
+  }
+}
