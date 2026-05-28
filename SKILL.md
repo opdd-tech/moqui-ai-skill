@@ -27,6 +27,50 @@ Moqui Framework is an all-in-one enterprise application framework based on Java 
 
 ---
 
+## Before You Code (Moqui)
+
+Run this five-question check before opening an editor:
+
+1. **Success condition.** State the user-visible outcome in one sentence. If you can't, the requirement is unclear — go back to `work/{TICKET}/requirement.md` §1.
+2. **What could break if my model is wrong?** Mantle's data model is opinionated. Wrong assumptions about FKs, status flows, bridge entities, or extension vs new entity will surface as silent miswires. Skim `references/MANTLE.md` for the entity package you're touching.
+3. **Does it already exist?** Grep `references/MANTLE.md`, `references/SERVICES.md`, and the `mantle-usl` source for a service with the verb you'd write. The strongest answer to "should I build this?" is "Mantle already has it."
+4. **What lessons apply?** Search `docs/ai/lessons.md` for the tag (`[Moqui-Entities]`, `[Mantle-Reuse]`, `[Catalog]`, etc.). Lessons supersede this skill where they conflict.
+5. **What's the smallest change?** Prefer `extend-entity` over a new entity. Prefer `SECA` over wrapping a stock service. Prefer a custom service that calls Mantle services over duplicating their logic. (This is the *Demand Elegance* gate from AGENTS.md §10.)
+
+---
+
+## Anti-Patterns — DO NOT
+
+The protected-zone PreToolUse hook (`scripts/claude-hooks/protected-zone-guard.sh`) already blocks the hardest of these at the tool layer (modifying `mantle-udm`, `mantle-usl`, `SimpleScreens`, `MarbleERP`, `framework/`, or vendored components). The soft DO-NOTs the hook can't catch:
+
+- **DO NOT put business logic in screens.** All business logic goes in services. Screens orchestrate, services compute. (Logic in screens is invisible to REST, untestable, and unreachable from SECA.)
+- **DO NOT hardcode status IDs.** Use the Mantle enum constants (`OrderApproved`, `WeInProgress`, `PartyActive`, etc.). String literals drift and break when seed data is renamed.
+- **DO NOT create a new entity when `extend-entity` would work.** Mantle's tables are designed to be extended. Adding columns is cheap; adding aggregates is expensive and pollutes the data model.
+- **DO NOT add a direct FK when a stock bridge entity exists.** E.g. don't add `workEffortId` to `OrderItem` — use `OrderItemWorkEffort`. Don't add per-target FKs to `CommunicationEvent` — use `CommEventOrder` / `CommEventWorkEffort`. (See lessons tagged `[Mantle-Reuse]`.)
+- **DO NOT skip artifact authorization for new apps or REST resources.** New `qapps` and REST resources are invisible by default unless authorized in `data/SecurityTypeData.xml`. The symptom is a 404 or a missing tile in the app list.
+- **DO NOT call services or read entities directly from XML Screens when a `service-call` or `entity-find` already does it.** XML Screens have first-class elements for both.
+- **DO NOT load business data via `seed-initial`.** That's reserved for framework primitives. Use `seed` for type/enum data, `install` for required runtime data, `demo` for sample data.
+- **DO NOT write a SECA without an `if` predicate.** Unconditional SECAs fire on every call to the trigger service — including failure paths and rollback paths.
+
+---
+
+## Verify After Each Pattern
+
+The patterns later in this skill are paired with `## Verify` blocks in the `references/*.md` files. The common verification recipes:
+
+| Change | How to verify locally |
+|--------|----------------------|
+| New / extended entity | `cd moqui-framework && ./gradlew load` → tail `runtime/log/moqui.log` for `Entity {name} loaded`. On failure search for `XSDValidationError` or `ConstraintViolation`. |
+| New service | Call from `qapps/tools` Service Run UI with sample input. Confirm response shape; confirm any SECA fired (check log for `Calling SECA ...`). |
+| New REST resource | `curl -u admin:moqui http://localhost:8080/rest/s1/landmark/{resource}` — confirm 200 and the expected JSON shape; confirm 401 without auth. |
+| New SECA | Trigger the underlying service; confirm log shows `Calling SECA {name}` and the side effect occurred. If silent, check the `if` predicate. |
+| New screen / subscreen | Navigate to it in `qapps/marble` (or wherever it's mounted); confirm artifact auth is set if it's a new app root. |
+| Seed data change | `./gradlew load -Ptypes=seed` then query the affected entity via Entity Data UI under `qapps/tools`. |
+
+For *all* backend changes: `git diff` for unintended modifications; run `./gradlew :runtime:component:landmark-hsto-core:compileTestGroovy` (and tests if they exist); paste output into `work/{TICKET}/review.md` §5 *Verification Evidence*.
+
+---
+
 ## Architecture Quick Reference
 
 ### Project Structure
