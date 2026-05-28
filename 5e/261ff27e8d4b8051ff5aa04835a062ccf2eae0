@@ -1,0 +1,19 @@
+README.md
+  s_e1047e46c56e05::t_25dacb89564050 61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5e261ff27e8d4b8051ff5aa04835a062ccf2eae0",
+  "prompts": {},
+  "sessions": {
+    "s_e1047e46c56e05": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4c8b1327-0037-48d0-b400-144a419c7604",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nirendra Singh Panwar <nirendra@noitechnologies.com>"
+    }
+  }
+}
